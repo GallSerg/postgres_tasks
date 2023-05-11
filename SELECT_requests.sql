@@ -4,7 +4,7 @@ select
 	duration
 from tracks
 order by duration desc 
-limit 1
+limit 1;
 
 
 -- 2.2 
@@ -12,21 +12,21 @@ select
 	name,
 	duration
 from tracks
-where duration >= 3.5 * 60
+where duration >= 3.5 * 60;
 
 
 -- 2.3
 select 
 	name
 from songbook
-where issue_year between 2018 and 2020
+where issue_year between 2018 and 2020;
 
 
 -- 2.4
 select 
 	name
 from musicant
-where name not like '% %'
+where name not like '% %';
 
 
 -- 2.5
@@ -40,7 +40,7 @@ where lower(name) like 'мой'
    or lower(name) like '% my'
    or lower(name) like 'my %'
    or lower(name) like '% мой %'
-   or lower(name) like '% my %'
+   or lower(name) like '% my %';
    
 
 -- 3.1
@@ -57,7 +57,7 @@ select
 	count(*) as track_count
 from album a 
 inner join musicantalbumlink m on a.id = m.albumid 
-where a.issue_year between 2019 and 2020
+where a.issue_year between 2019 and 2020;
 
 
 -- 3.3
@@ -66,7 +66,7 @@ select
 	avg(duration) as avg_duration
 from album a 
 inner join tracks t on t.albumid = a.id 
-group by a.name
+group by a.name;
 
 
 -- 3.4
@@ -152,3 +152,34 @@ where v.tracks_count = (select
 						from v_tracks);
 
 
+-- 4.1 исправленный
+					
+select distinct 
+	a.name
+from album a 
+join musicantalbumlink ma on ma.albumid = a.id 
+join genremusicantlink mg on mg.musicantid = ma.musicantid 
+group by a.id, mg.musicantid 
+having count(mg.genreid) > 1;
+
+-- 4.2 исправленный
+
+select 
+	t.name
+from tracks t 
+left join songbooktracklink st on st.trackid = t.id
+where st.trackid is null
+
+-- 4.4 исправленный
+
+select 
+	a.name
+from album a
+join tracks t on a.id = t.albumid
+group by a.id
+having count(*) = 
+		(select count(tr.id) 
+		 from tracks tr 
+		 group by tr.albumid 
+		 order by 1 
+		 limit 1)
